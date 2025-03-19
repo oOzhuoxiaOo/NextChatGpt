@@ -1,10 +1,10 @@
 'use client';
 import ChatAsk from '@/components/chat/Ask';
 import ChatReply from '@/components/chat/Reply';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import { useState } from 'react';
-import './page.css';
+import { useEffect, useRef, useState } from 'react';
+import './page.scss';
 import markdownIt from 'markdown-it';
 import Shiki from '@shikijs/markdown-it';
 const md = markdownIt();
@@ -24,189 +24,113 @@ export default function Home() {
     {
       id: 1,
       type: 'res',
-      content: `<div class="p-3 rounded-lg md-css"><p><code>Promise.then</code> 是 JavaScript 中用于处理异步操作的核心方法之一。它允许你在 Promise 对象的状态变为 <code>fulfilled</code> 或 <code>rejected</code> 时执行相应的回调函数。下面是一个简单的 <code>Promise.then</code> 的手写实现：</p>
-<pre><code class="language-javascript"><pre class="shiki one-dark-pro" style="background-color:#282c34;color:#abb2bf" tabindex="0"><code class="language-javascript"><span class="line"><span style="color:#C678DD">class</span><span style="color:#E5C07B"> MyPromise</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">  constructor</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75;font-style:italic">executor</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#E5C07B">    this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">state</span><span style="color:#56B6C2"> =</span><span style="color:#98C379"> 'pending'</span><span style="color:#ABB2BF">; </span><span style="color:#7F848E;font-style:italic">// Promise 的初始状态</span></span>
-<span class="line"><span style="color:#E5C07B">    this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">value</span><span style="color:#56B6C2"> =</span><span style="color:#D19A66"> undefined</span><span style="color:#ABB2BF">; </span><span style="color:#7F848E;font-style:italic">// Promise 的最终值</span></span>
-<span class="line"><span style="color:#E5C07B">    this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">reason</span><span style="color:#56B6C2"> =</span><span style="color:#D19A66"> undefined</span><span style="color:#ABB2BF">; </span><span style="color:#7F848E;font-style:italic">// Promise 的拒绝原因</span></span>
-<span class="line"><span style="color:#E5C07B">    this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">onFulfilledCallbacks</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> []; </span><span style="color:#7F848E;font-style:italic">// 成功回调函数队列</span></span>
-<span class="line"><span style="color:#E5C07B">    this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">onRejectedCallbacks</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> []; </span><span style="color:#7F848E;font-style:italic">// 失败回调函数队列</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#C678DD">    const</span><span style="color:#61AFEF"> resolve</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75;font-style:italic">value</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">      if</span><span style="color:#ABB2BF"> (</span><span style="color:#E5C07B">this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">state</span><span style="color:#56B6C2"> ===</span><span style="color:#98C379"> 'pending'</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#E5C07B">        this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">state</span><span style="color:#56B6C2"> =</span><span style="color:#98C379"> 'fulfilled'</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#E5C07B">        this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">value</span><span style="color:#56B6C2"> =</span><span style="color:#E06C75"> value</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#E5C07B">        this</span><span style="color:#ABB2BF">.</span><span style="color:#E5C07B">onFulfilledCallbacks</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">forEach</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75;font-style:italic">callback</span><span style="color:#C678DD"> =&gt;</span><span style="color:#61AFEF"> callback</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">value</span><span style="color:#ABB2BF">));</span></span>
-<span class="line"><span style="color:#ABB2BF">      }</span></span>
-<span class="line"><span style="color:#ABB2BF">    };</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#C678DD">    const</span><span style="color:#61AFEF"> reject</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75;font-style:italic">reason</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">      if</span><span style="color:#ABB2BF"> (</span><span style="color:#E5C07B">this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">state</span><span style="color:#56B6C2"> ===</span><span style="color:#98C379"> 'pending'</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#E5C07B">        this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">state</span><span style="color:#56B6C2"> =</span><span style="color:#98C379"> 'rejected'</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#E5C07B">        this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">reason</span><span style="color:#56B6C2"> =</span><span style="color:#E06C75"> reason</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#E5C07B">        this</span><span style="color:#ABB2BF">.</span><span style="color:#E5C07B">onRejectedCallbacks</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">forEach</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75;font-style:italic">callback</span><span style="color:#C678DD"> =&gt;</span><span style="color:#61AFEF"> callback</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">reason</span><span style="color:#ABB2BF">));</span></span>
-<span class="line"><span style="color:#ABB2BF">      }</span></span>
-<span class="line"><span style="color:#ABB2BF">    };</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#C678DD">    try</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#61AFEF">      executor</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">resolve</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">reject</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">    } </span><span style="color:#C678DD">catch</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#61AFEF">      reject</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">    }</span></span>
-<span class="line"><span style="color:#ABB2BF">  }</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#61AFEF">  then</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75;font-style:italic">onFulfilled</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">onRejected</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#C678DD">    const</span><span style="color:#E5C07B"> promise2</span><span style="color:#56B6C2"> =</span><span style="color:#C678DD"> new</span><span style="color:#61AFEF"> MyPromise</span><span style="color:#ABB2BF">((</span><span style="color:#E06C75;font-style:italic">resolve</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">reject</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">      if</span><span style="color:#ABB2BF"> (</span><span style="color:#E5C07B">this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">state</span><span style="color:#56B6C2"> ===</span><span style="color:#98C379"> 'fulfilled'</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#61AFEF">        setTimeout</span><span style="color:#ABB2BF">(() </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">          try</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">            const</span><span style="color:#E5C07B"> x</span><span style="color:#56B6C2"> =</span><span style="color:#61AFEF"> onFulfilled</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">value</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#61AFEF">            resolvePromise</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">promise2</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">x</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">resolve</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">reject</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">          } </span><span style="color:#C678DD">catch</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#61AFEF">            reject</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">          }</span></span>
-<span class="line"><span style="color:#ABB2BF">        }, </span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">      } </span><span style="color:#C678DD">else</span><span style="color:#C678DD"> if</span><span style="color:#ABB2BF"> (</span><span style="color:#E5C07B">this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">state</span><span style="color:#56B6C2"> ===</span><span style="color:#98C379"> 'rejected'</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#61AFEF">        setTimeout</span><span style="color:#ABB2BF">(() </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">          try</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">            const</span><span style="color:#E5C07B"> x</span><span style="color:#56B6C2"> =</span><span style="color:#61AFEF"> onRejected</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">reason</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#61AFEF">            resolvePromise</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">promise2</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">x</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">resolve</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">reject</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">          } </span><span style="color:#C678DD">catch</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#61AFEF">            reject</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">          }</span></span>
-<span class="line"><span style="color:#ABB2BF">        }, </span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">      } </span><span style="color:#C678DD">else</span><span style="color:#C678DD"> if</span><span style="color:#ABB2BF"> (</span><span style="color:#E5C07B">this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">state</span><span style="color:#56B6C2"> ===</span><span style="color:#98C379"> 'pending'</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#E5C07B">        this</span><span style="color:#ABB2BF">.</span><span style="color:#E5C07B">onFulfilledCallbacks</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">push</span><span style="color:#ABB2BF">(() </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#61AFEF">          setTimeout</span><span style="color:#ABB2BF">(() </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">            try</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">              const</span><span style="color:#E5C07B"> x</span><span style="color:#56B6C2"> =</span><span style="color:#61AFEF"> onFulfilled</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">value</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#61AFEF">              resolvePromise</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">promise2</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">x</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">resolve</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">reject</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">            } </span><span style="color:#C678DD">catch</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#61AFEF">              reject</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">            }</span></span>
-<span class="line"><span style="color:#ABB2BF">          }, </span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">        });</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E5C07B">        this</span><span style="color:#ABB2BF">.</span><span style="color:#E5C07B">onRejectedCallbacks</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">push</span><span style="color:#ABB2BF">(() </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#61AFEF">          setTimeout</span><span style="color:#ABB2BF">(() </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">            try</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">              const</span><span style="color:#E5C07B"> x</span><span style="color:#56B6C2"> =</span><span style="color:#61AFEF"> onRejected</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">this</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">reason</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#61AFEF">              resolvePromise</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">promise2</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">x</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">resolve</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">reject</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">            } </span><span style="color:#C678DD">catch</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#61AFEF">              reject</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">            }</span></span>
-<span class="line"><span style="color:#ABB2BF">          }, </span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">        });</span></span>
-<span class="line"><span style="color:#ABB2BF">      }</span></span>
-<span class="line"><span style="color:#ABB2BF">    });</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#C678DD">    return</span><span style="color:#E06C75"> promise2</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#ABB2BF">  }</span></span>
-<span class="line"><span style="color:#ABB2BF">}</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#C678DD">function</span><span style="color:#61AFEF"> resolvePromise</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75;font-style:italic">promise2</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">x</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">resolve</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">reject</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#C678DD">  if</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">promise2</span><span style="color:#56B6C2"> ===</span><span style="color:#E06C75"> x</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#C678DD">    return</span><span style="color:#61AFEF"> reject</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">new</span><span style="color:#61AFEF"> TypeError</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">'Chaining cycle detected for promise'</span><span style="color:#ABB2BF">));</span></span>
-<span class="line"><span style="color:#ABB2BF">  }</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#C678DD">  let</span><span style="color:#E06C75"> called</span><span style="color:#56B6C2"> =</span><span style="color:#D19A66"> false</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#C678DD">  if</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">x</span><span style="color:#56B6C2"> !==</span><span style="color:#D19A66"> null</span><span style="color:#56B6C2"> &amp;&amp;</span><span style="color:#ABB2BF"> (</span><span style="color:#C678DD">typeof</span><span style="color:#E06C75"> x</span><span style="color:#56B6C2"> ===</span><span style="color:#98C379"> 'object'</span><span style="color:#56B6C2"> ||</span><span style="color:#C678DD"> typeof</span><span style="color:#E06C75"> x</span><span style="color:#56B6C2"> ===</span><span style="color:#98C379"> 'function'</span><span style="color:#ABB2BF">)) {</span></span>
-<span class="line"><span style="color:#C678DD">    try</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">      const</span><span style="color:#E5C07B"> then</span><span style="color:#56B6C2"> =</span><span style="color:#E5C07B"> x</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">then</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#C678DD">      if</span><span style="color:#ABB2BF"> (</span><span style="color:#C678DD">typeof</span><span style="color:#E06C75"> then</span><span style="color:#56B6C2"> ===</span><span style="color:#98C379"> 'function'</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#E5C07B">        then</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">call</span><span style="color:#ABB2BF">(</span></span>
-<span class="line"><span style="color:#E06C75">          x</span><span style="color:#ABB2BF">,</span></span>
-<span class="line"><span style="color:#E06C75;font-style:italic">          y</span><span style="color:#C678DD"> =&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">            if</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">called</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">return</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#E06C75">            called</span><span style="color:#56B6C2"> =</span><span style="color:#D19A66"> true</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#61AFEF">            resolvePromise</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">promise2</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">y</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">resolve</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">reject</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">          },</span></span>
-<span class="line"><span style="color:#E06C75;font-style:italic">          r</span><span style="color:#C678DD"> =&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#C678DD">            if</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">called</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">return</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#E06C75">            called</span><span style="color:#56B6C2"> =</span><span style="color:#D19A66"> true</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#61AFEF">            reject</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">r</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">          }</span></span>
-<span class="line"><span style="color:#ABB2BF">        );</span></span>
-<span class="line"><span style="color:#ABB2BF">      } </span><span style="color:#C678DD">else</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#61AFEF">        resolve</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">x</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">      }</span></span>
-<span class="line"><span style="color:#ABB2BF">    } </span><span style="color:#C678DD">catch</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">) {</span></span>
-<span class="line"><span style="color:#C678DD">      if</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">called</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">return</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#E06C75">      called</span><span style="color:#56B6C2"> =</span><span style="color:#D19A66"> true</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#61AFEF">      reject</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">error</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">    }</span></span>
-<span class="line"><span style="color:#ABB2BF">  } </span><span style="color:#C678DD">else</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#61AFEF">    resolve</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">x</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">  }</span></span>
-<span class="line"><span style="color:#ABB2BF">}</span></span></code></pre></code></pre>
-<h3>解释</h3>
-<ol>
-<li>
-<p><strong>MyPromise 类</strong>:</p>
-<ul>
-<li><code>state</code>: 表示 Promise 的当前状态，可以是 <code>pending</code>、<code>fulfilled</code> 或 <code>rejected</code>。</li>
-<li><code>value</code>: 当 Promise 成功时，存储的值。</li>
-<li><code>reason</code>: 当 Promise 失败时，存储的原因。</li>
-<li><code>onFulfilledCallbacks</code> 和 <code>onRejectedCallbacks</code>: 分别存储成功和失败的回调函数队列。</li>
-</ul>
-</li>
-<li>
-<p><strong>resolve 和 reject</strong>:</p>
-<ul>
-<li><code>resolve</code>: 当 Promise 成功时调用，将状态改为 <code>fulfilled</code>，并执行所有成功回调。</li>
-<li><code>reject</code>: 当 Promise 失败时调用，将状态改为 <code>rejected</code>，并执行所有失败回调。</li>
-</ul>
-</li>
-<li>
-<p><strong>then 方法</strong>:</p>
-<ul>
-<li><code>then</code> 方法返回一个新的 Promise 对象 <code>promise2</code>。</li>
-<li>根据当前 Promise 的状态，决定是立即执行回调还是将回调放入队列中等待执行。</li>
-<li>使用 <code>setTimeout</code> 来模拟异步执行，确保回调函数在事件循环的下一个 tick 中执行。</li>
-</ul>
-</li>
-<li>
-<p><strong>resolvePromise 函数</strong>:</p>
-<ul>
-<li>用于处理 <code>then</code> 方法返回的 Promise 对象。</li>
-<li>如果 <code>x</code> 是一个 Promise 对象，则递归调用 <code>resolvePromise</code> 直到 <code>x</code> 不再是一个 Promise。</li>
-<li>如果 <code>x</code> 是一个普通值，则直接调用 <code>resolve</code>。</li>
-</ul>
-</li>
-</ol>
-<h3>使用示例</h3>
-<pre><code class="language-javascript"><pre class="shiki one-dark-pro" style="background-color:#282c34;color:#abb2bf" tabindex="0"><code class="language-javascript"><span class="line"><span style="color:#C678DD">const</span><span style="color:#E5C07B"> promise</span><span style="color:#56B6C2"> =</span><span style="color:#C678DD"> new</span><span style="color:#61AFEF"> MyPromise</span><span style="color:#ABB2BF">((</span><span style="color:#E06C75;font-style:italic">resolve</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">reject</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#61AFEF">  setTimeout</span><span style="color:#ABB2BF">(() </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#61AFEF">    resolve</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">'Success!'</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">  }, </span><span style="color:#D19A66">1000</span><span style="color:#ABB2BF">);</span></span>
-<span class="line"><span style="color:#ABB2BF">});</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#E5C07B">promise</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">then</span><span style="color:#ABB2BF">((</span><span style="color:#E06C75;font-style:italic">value</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#E5C07B">  console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">value</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// 1秒后输出 "Success!"</span></span>
-<span class="line"><span style="color:#C678DD">  return</span><span style="color:#98C379"> 'Another Success!'</span><span style="color:#ABB2BF">;</span></span>
-<span class="line"><span style="color:#ABB2BF">}).</span><span style="color:#61AFEF">then</span><span style="color:#ABB2BF">((</span><span style="color:#E06C75;font-style:italic">value</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">=&gt;</span><span style="color:#ABB2BF"> {</span></span>
-<span class="line"><span style="color:#E5C07B">  console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">value</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// 输出 "Another Success!"</span></span>
-<span class="line"><span style="color:#ABB2BF">});</span></span></code></pre></code></pre>
-<p>这个手写实现是一个简化版的 <code>Promise</code>，实际 JavaScript 中的 <code>Promise</code> 实现要复杂得多，并且遵循了 <a href="https://promisesaplus.com/">Promises/A+</a> 规范。</p>
-</div>`,
+      content: `<p>深度克隆（Deep Clone）是指创建一个新对象，并将原对象的所有属性（包括嵌套的对象和数组）都复制到新对象中，而不是仅仅复制引用。这样，新对象和原对象是完全独立的，修改新对象不会影响原对象。</p>
+    <p>在 JavaScript 中，实现深度克隆有多种方法。以下是几种常见的方式：</p>
+    <h3>1. 使用 <code>JSON.parse</code> 和 <code>JSON.stringify</code></h3>
+    <p>这是最简单的方法，但有一些限制：</p>
+    <ul>
+    <li>不能克隆函数、<code>undefined</code>、<code>Symbol</code> 等特殊类型。</li>
+    <li>不能克隆循环引用的对象。</li>
+    </ul>
+    <pre><code class="language-javascript"><pre class="shiki one-dark-pro" style="background-color:#282c34;color:#abb2bf" tabindex="0"><code class="language-javascript"><span class="line"><span style="color:#C678DD">function</span><span style="color:#61AFEF"> deepClone</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75;font-style:italic">obj</span><span style="color:#ABB2BF">) {</span></span>
+    <span class="line"><span style="color:#C678DD">    return</span><span style="color:#E5C07B"> JSON</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">parse</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">JSON</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">stringify</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">obj</span><span style="color:#ABB2BF">));</span></span>
+    <span class="line"><span style="color:#ABB2BF">}</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#C678DD">const</span><span style="color:#E5C07B"> original</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> { </span><span style="color:#E06C75">a</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">b</span><span style="color:#ABB2BF">: { </span><span style="color:#E06C75">c</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">2</span><span style="color:#ABB2BF"> } };</span></span>
+    <span class="line"><span style="color:#C678DD">const</span><span style="color:#E5C07B"> cloned</span><span style="color:#56B6C2"> =</span><span style="color:#61AFEF"> deepClone</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">original</span><span style="color:#ABB2BF">);</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">cloned</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// { a: 1, b: { c: 2 } }</span></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">cloned</span><span style="color:#56B6C2"> ===</span><span style="color:#E06C75"> original</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// false</span></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">cloned</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">b</span><span style="color:#56B6C2"> ===</span><span style="color:#E5C07B"> original</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">b</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// false</span></span></code></pre></code></pre>
+    <h3>2. 使用递归</h3>
+    <p>这种方法可以处理更多类型的对象，并且可以处理循环引用。</p>
+    <pre><code class="language-javascript"><pre class="shiki one-dark-pro" style="background-color:#282c34;color:#abb2bf" tabindex="0"><code class="language-javascript"><span class="line"><span style="color:#C678DD">function</span><span style="color:#61AFEF"> deepClone</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75;font-style:italic">obj</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75;font-style:italic">hash</span><span style="color:#56B6C2"> =</span><span style="color:#C678DD"> new</span><span style="color:#61AFEF"> WeakMap</span><span style="color:#ABB2BF">()) {</span></span>
+    <span class="line"><span style="color:#C678DD">    if</span><span style="color:#ABB2BF"> (</span><span style="color:#E06C75">obj</span><span style="color:#56B6C2"> ===</span><span style="color:#D19A66"> null</span><span style="color:#56B6C2"> ||</span><span style="color:#C678DD"> typeof</span><span style="color:#E06C75"> obj</span><span style="color:#56B6C2"> !==</span><span style="color:#98C379"> 'object'</span><span style="color:#ABB2BF">) {</span></span>
+    <span class="line"><span style="color:#C678DD">        return</span><span style="color:#E06C75"> obj</span><span style="color:#ABB2BF">;</span></span>
+    <span class="line"><span style="color:#ABB2BF">    }</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#7F848E;font-style:italic">    // 处理循环引用</span></span>
+    <span class="line"><span style="color:#C678DD">    if</span><span style="color:#ABB2BF"> (</span><span style="color:#E5C07B">hash</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">has</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">obj</span><span style="color:#ABB2BF">)) {</span></span>
+    <span class="line"><span style="color:#C678DD">        return</span><span style="color:#E5C07B"> hash</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">get</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">obj</span><span style="color:#ABB2BF">);</span></span>
+    <span class="line"><span style="color:#ABB2BF">    }</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#C678DD">    let</span><span style="color:#E06C75"> clone</span><span style="color:#56B6C2"> =</span><span style="color:#E5C07B"> Array</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">isArray</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">obj</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">?</span><span style="color:#ABB2BF"> [] </span><span style="color:#C678DD">:</span><span style="color:#ABB2BF"> {};</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#E5C07B">    hash</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">set</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">obj</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">clone</span><span style="color:#ABB2BF">);</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#C678DD">    for</span><span style="color:#ABB2BF"> (</span><span style="color:#C678DD">let</span><span style="color:#E06C75"> key</span><span style="color:#C678DD"> in</span><span style="color:#E06C75"> obj</span><span style="color:#ABB2BF">) {</span></span>
+    <span class="line"><span style="color:#C678DD">        if</span><span style="color:#ABB2BF"> (</span><span style="color:#E5C07B">obj</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">hasOwnProperty</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">key</span><span style="color:#ABB2BF">)) {</span></span>
+    <span class="line"><span style="color:#E06C75">            clone</span><span style="color:#ABB2BF">[</span><span style="color:#E06C75">key</span><span style="color:#ABB2BF">] </span><span style="color:#56B6C2">=</span><span style="color:#61AFEF"> deepClone</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">obj</span><span style="color:#ABB2BF">[</span><span style="color:#E06C75">key</span><span style="color:#ABB2BF">], </span><span style="color:#E06C75">hash</span><span style="color:#ABB2BF">);</span></span>
+    <span class="line"><span style="color:#ABB2BF">        }</span></span>
+    <span class="line"><span style="color:#ABB2BF">    }</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#C678DD">    return</span><span style="color:#E06C75"> clone</span><span style="color:#ABB2BF">;</span></span>
+    <span class="line"><span style="color:#ABB2BF">}</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#C678DD">const</span><span style="color:#E5C07B"> original</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> { </span><span style="color:#E06C75">a</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">b</span><span style="color:#ABB2BF">: { </span><span style="color:#E06C75">c</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">2</span><span style="color:#ABB2BF"> } };</span></span>
+    <span class="line"><span style="color:#C678DD">const</span><span style="color:#E5C07B"> cloned</span><span style="color:#56B6C2"> =</span><span style="color:#61AFEF"> deepClone</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">original</span><span style="color:#ABB2BF">);</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">cloned</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// { a: 1, b: { c: 2 } }</span></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">cloned</span><span style="color:#56B6C2"> ===</span><span style="color:#E06C75"> original</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// false</span></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">cloned</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">b</span><span style="color:#56B6C2"> ===</span><span style="color:#E5C07B"> original</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">b</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// false</span></span></code></pre></code></pre>
+    <h3>3. 使用 <code>structuredClone</code></h3>
+    <p><code>structuredClone</code> 是浏览器提供的一个原生方法，可以深度克隆对象，并且支持更多类型（如 <code>Map</code>、<code>Set</code>、<code>ArrayBuffer</code> 等）。</p>
+    <pre><code class="language-javascript"><pre class="shiki one-dark-pro" style="background-color:#282c34;color:#abb2bf" tabindex="0"><code class="language-javascript"><span class="line"><span style="color:#C678DD">const</span><span style="color:#E5C07B"> original</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> { </span><span style="color:#E06C75">a</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">b</span><span style="color:#ABB2BF">: { </span><span style="color:#E06C75">c</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">2</span><span style="color:#ABB2BF"> } };</span></span>
+    <span class="line"><span style="color:#C678DD">const</span><span style="color:#E5C07B"> cloned</span><span style="color:#56B6C2"> =</span><span style="color:#61AFEF"> structuredClone</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">original</span><span style="color:#ABB2BF">);</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">cloned</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// { a: 1, b: { c: 2 } }</span></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">cloned</span><span style="color:#56B6C2"> ===</span><span style="color:#E06C75"> original</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// false</span></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">cloned</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">b</span><span style="color:#56B6C2"> ===</span><span style="color:#E5C07B"> original</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">b</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// false</span></span></code></pre></code></pre>
+    <h3>4. 使用第三方库（如 Lodash）</h3>
+    <p>Lodash 提供了一个 <code>cloneDeep</code> 方法，可以方便地进行深度克隆。</p>
+    <pre><code class="language-javascript"><pre class="shiki one-dark-pro" style="background-color:#282c34;color:#abb2bf" tabindex="0"><code class="language-javascript"><span class="line"><span style="color:#C678DD">const</span><span style="color:#E5C07B"> _</span><span style="color:#56B6C2"> =</span><span style="color:#61AFEF"> require</span><span style="color:#ABB2BF">(</span><span style="color:#98C379">'lodash'</span><span style="color:#ABB2BF">);</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#C678DD">const</span><span style="color:#E5C07B"> original</span><span style="color:#56B6C2"> =</span><span style="color:#ABB2BF"> { </span><span style="color:#E06C75">a</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">, </span><span style="color:#E06C75">b</span><span style="color:#ABB2BF">: { </span><span style="color:#E06C75">c</span><span style="color:#ABB2BF">: </span><span style="color:#D19A66">2</span><span style="color:#ABB2BF"> } };</span></span>
+    <span class="line"><span style="color:#C678DD">const</span><span style="color:#E5C07B"> cloned</span><span style="color:#56B6C2"> =</span><span style="color:#E5C07B"> _</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">cloneDeep</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">original</span><span style="color:#ABB2BF">);</span></span>
+    <span class="line"></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">cloned</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// { a: 1, b: { c: 2 } }</span></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E06C75">cloned</span><span style="color:#56B6C2"> ===</span><span style="color:#E06C75"> original</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// false</span></span>
+    <span class="line"><span style="color:#E5C07B">console</span><span style="color:#ABB2BF">.</span><span style="color:#61AFEF">log</span><span style="color:#ABB2BF">(</span><span style="color:#E5C07B">cloned</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">b</span><span style="color:#56B6C2"> ===</span><span style="color:#E5C07B"> original</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">b</span><span style="color:#ABB2BF">); </span><span style="color:#7F848E;font-style:italic">// false</span></span></code></pre></code></pre>
+    <h3>总结</h3>
+    <ul>
+    <li>如果对象结构简单且不包含特殊类型，可以使用 <code>JSON.parse</code> 和 <code>JSON.stringify</code>。</li>
+    <li>如果需要处理复杂对象或循环引用，可以使用递归方法。</li>
+    <li>如果环境支持 <code>structuredClone</code>，可以使用它来进行深度克隆。</li>
+    <li>如果项目中已经使用了 Lodash，可以直接使用 <code>_.cloneDeep</code>。</li>
+    </ul>
+    <p>根据具体需求选择合适的方法来实现深度克隆。</p>`,
     },
   ]);
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(false);
+  const replayBottom = useRef<HTMLDivElement>(null);
+  function scrollToBottom() {
+    replayBottom.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+      inline: 'nearest',
+    });
+  }
+  useEffect(() => {
+    scrollToBottom();
+  }, [data]);
+  useEffect(() => {});
   async function handleSend() {
     setLoading(true);
+    scrollToBottom();
+    setData((prev) => {
+      return [...prev, { id: prev.length, type: 'req', content: keyword }];
+    });
     const resp = await fetch(`http://localhost:8000/api/v1?content=${keyword}`);
     const reader = resp.body!.getReader();
     const decoder = new TextDecoder();
-
     let originText = '';
+
     setData((prev) => {
       return [
         ...prev,
-        { id: prev.length, type: 'req', content: keyword },
         {
-          id: prev.length + 1,
+          id: prev.length,
           type: 'res',
           content: '',
         },
@@ -229,8 +153,6 @@ export default function Home() {
           };
         })
       );
-
-      // console.log('txt', txt);
     }
     setLoading(false);
     setKeyword('');
@@ -238,10 +160,10 @@ export default function Home() {
     // console.log(keyword);
   }
   return (
-    <div>
-      <div className="flex flex-col items-center justify-center leading-6 text-left ">
-        <div className="flex flex-col items-center w-full pb-16">
-          <div className="w-full overflow-y-auto h-170">
+    <div className="h-full">
+      <div className="relative flex flex-col items-center h-full leading-6 text-left">
+        <div className="flex flex-col items-center w-full">
+          <div className="w-full overflow-y-auto h-172">
             <div className="flex flex-col items-center justify-center max-w-3xl gap-8 pt-3 pb-3 ml-auto mr-auto main-box min-w-xl ">
               {data.map((item) => {
                 return item.type === 'req' ? (
@@ -249,38 +171,42 @@ export default function Home() {
                     <ChatAsk content={item.content}></ChatAsk>
                   </div>
                 ) : (
-                  <div key={item.id} className="flex mr-auto">
-                    <ChatReply content={item.content}></ChatReply>
+                  <div key={item.id} className="flex w-full mr-auto">
+                    <ChatReply
+                      loading={loading}
+                      content={item.content}
+                    ></ChatReply>
                   </div>
                 );
               })}
             </div>
-          </div>
-          <div className="w-full input-box ">
-            <div className="flex flex-col items-center max-w-3xl gap-3 p-5 pt-8 pb-8 ml-auto mr-auto min-w-xl rounded-2xl bg-[#404045]">
-              <TextArea
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                placeholder="请输入内容"
-                className="c-a-textarea"
-                autoSize={{ minRows: 3, maxRows: 3 }}
-                style={{
-                  fontSize: '1rem',
-                  background: 'none',
-                  boxShadow: 'none',
-                  border: 'none',
-                  color: 'white',
-                }}
-              />
-              <Button
-                onClick={handleSend}
-                className="ml-auto"
-                loading={loading}
-              >
-                Send
-              </Button>
+            <div className="flex w-full max-w-3xl ml-auto mr-auto">
+              {loading && <Spin className="mr-auto"></Spin>}
             </div>
-            -
+            <div className="h-10" ref={replayBottom}></div>
+          </div>
+        </div>
+        <div className="absolute w-full bottom-10 input-box">
+          <div className="flex flex-col items-center max-w-[52rem] gap-3 p-5 pt-8 pb-8 ml-auto mr-auto min-w-xl rounded-2xl bg-[#404045]">
+            <TextArea
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="请输入内容"
+              className="c-a-textarea"
+              autoSize={{ minRows: 1, maxRows: 3 }}
+              disabled={loading}
+              onPressEnter={handleSend}
+              style={{
+                fontSize: '1rem',
+                background: 'none',
+                boxShadow: 'none',
+                border: 'none',
+                color: 'white',
+              }}
+            />
+            <Button onClick={handleSend} className="ml-auto" loading={loading}>
+              Send
+            </Button>
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@ const headerStyle: React.CSSProperties = {
 
 const contentStyle: React.CSSProperties = {
   textAlign: 'center',
-  minHeight: 120,
+  height: '100%',
   fontSize: 16,
   color: '#fff',
   width: '100%',
